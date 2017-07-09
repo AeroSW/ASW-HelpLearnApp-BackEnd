@@ -1,5 +1,5 @@
 #include <iostream>
-#include "NeuralNet.h"
+#include "NeuralNetwork.h"
 #include "TrainingInterface.h"
 #include "TrainingFactory.h"
 
