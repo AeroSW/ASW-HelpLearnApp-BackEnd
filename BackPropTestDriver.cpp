@@ -19,12 +19,12 @@ int main() {
 		function_names.push_back("logistic");
 	}
 	NeuralNetwork * nn = new NeuralNetwork(function_names, blueprint);
-	std::vector<double*> inputs;
-	std::vector<double*> outputs;
+	std::vector<std::valarray<double>> inputs;
+	std::vector<std::valarray<double>> outputs;
 	for (uint32_t i = 0; i < 2; i++) {
 		for (uint32_t j = 0; j < 2; j++) {
-			double * input_set = new double[2];
-			double * output_set = new double[1];
+			std::valarray<double> input_set(2);
+			std::valarray<double> output_set(1);
 			input_set[0] = (double) i;
 			input_set[1] = (double) j;
 			if (i == j) {
