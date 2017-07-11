@@ -12,8 +12,8 @@ learning_rate(lr), tolerance(t) {}
 ASW::BackPropagationTraining_Tol::BackPropagationTraining_Tol(const ASW::BackPropagationTraining_Tol& bptt):
 learning_rate(bptt.learning_rate), tolerance(bptt.tolerance){}
 ASW::BackPropagationTraining_Tol::~BackPropagationTraining_Tol() {}
-ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork * network, std::vector<double *> inputs, 
-																							std::vector<double *> outputs) {
+ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork * network, std::vector<std::valarray<double>> inputs, 
+																							std::vector<std::valarray<double>> outputs) {
 	// Test if the network being trained is NULL
 	// If network is a nullptr, negate it, so the Assert conditional is true to throw an error.
 	TRAINING_ASSERT(!(network == nullptr), "Nullptr exception - The Neural Network points to a null reference.");
@@ -34,24 +34,21 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 		size_t number_of_current_nodes = m_network->numNodes(cx);
 		for (size_t ax = 0; ax < number_of_current_nodes; ax++) {
 			size_t num_of_weights_for_current_node = m_network->getNumWeights(cx, ax);
-			double * new_weights = new double[num_of_weights_for_current_node];
+			std::valarray<double> new_weights(num_of_weights_for_current_node);
 			for (size_t dx = 0; dx < num_of_weights_for_current_node; dx++) {
 				new_weights[dx] = dist(gen);
 			}
 			m_network->setWeights(cx, ax, new_weights);
 			m_network->setBias(cx, ax, dist(gen));
-			delete[] new_weights; // Clean up memory.
+		//	delete[] new_weights; // Clean up memory.
 		}
 	}
 	double current_example_error; // Tracks error over the testing of all example sets.
 	size_t number_of_examples = inputs.size();
 	do {
 		for (size_t example_counter = 0; example_counter < number_of_examples; example_counter++) {
-			double * current_inputs = inputs[example_counter];
-			double * current_outputs = outputs[example_counter];
-			std::string ex_counter_str = std::to_string(example_counter);
-			TRAINING_ASSERT(!(current_inputs == nullptr), "Inputs for example set " + ex_counter_str + " is a null array.");
-			TRAINING_ASSERT(!(current_outputs == nullptr), "Outputs for example set " + ex_counter_str + " is a null array.");
+			std::valarray<double> current_inputs = inputs[example_counter];
+			std::valarray<double> current_outputs = outputs[example_counter];
 			
 			// Feed the inputs into the Neural Network.
 			// Save the outputs from the fed neural network.
@@ -120,7 +117,7 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 					for (size_t dx = 0; dx < num_curr; dx++) {
 						// Get the number of waits for the current neuron.
 						size_t num_weights = m_network->getNumWeights(cx, dx);
-						double * new_weights = new double[num_weights];
+						std::valarray<double> new_weights(num_weights);
 						// Calculate the new weights for the current Neuron using its training value, the algorithm's learning
 						// rate, it's old weights, and the input values fed into it.
 						for (size_t ax = 0; ax < num_prev; ax++) {
@@ -130,7 +127,6 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 						// Calculate the new bias using a similar method as the weights.
 						double new_bias = m_network->getBias(cx, dx) + (learning_rate * m_network->getTraining(cx, dx));
 						m_network->setBias(cx, dx, new_bias); // Set the new bias.
-						delete[] new_weights; // Clean up memory.
 					}
 				}
 			}
@@ -151,7 +147,7 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 		for (uint32_t cx = 0; cx < inputs.size(); cx++) {
 			double t_outs_err = 0.0;
 			std::vector<double> net_results = m_network->feed(inputs[cx]);
-			double * curr_outs = outputs[cx];
+			std::valarray<double> curr_outs = outputs[cx];
 			for (uint32_t dx = 0; dx < net_results.size(); dx++) {
 				t_outs_err += fabs(net_results[dx] - curr_outs[dx]); 
 			}
