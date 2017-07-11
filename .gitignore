@@ -46,3 +46,5 @@ x64/Debug/neuron\.nativecodeanalysis\.xml
 x64/Debug/sigmoidfunction\.nativecodeanalysis\.xml
 
 *.vcxproj
+
+ASW-HelpLearnApp-Backend\.vcxproj\.user
