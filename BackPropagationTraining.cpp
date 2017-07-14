@@ -52,7 +52,7 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 			
 			// Feed the inputs into the Neural Network.
 			// Save the outputs from the fed neural network.
-			std::vector<double> feed_outputs;
+			std::valarray<double> feed_outputs(current_outputs.size());
 			try {
 				feed_outputs = m_network->feed(current_inputs);
 			}
@@ -146,7 +146,7 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 		// provided example set.
 		for (uint32_t cx = 0; cx < inputs.size(); cx++) {
 			double t_outs_err = 0.0;
-			std::vector<double> net_results = m_network->feed(inputs[cx]);
+			std::valarray<double> net_results = m_network->feed(inputs[cx]);
 			std::valarray<double> curr_outs = outputs[cx];
 			for (uint32_t dx = 0; dx < net_results.size(); dx++) {
 				t_outs_err += fabs(net_results[dx] - curr_outs[dx]); 

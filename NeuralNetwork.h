@@ -15,7 +15,7 @@ namespace ASW {
 			NeuralNetwork(std::vector<std::string>&, std::vector<uint32_t>&);
 			NeuralNetwork(const NeuralNetwork&);
 			virtual ~NeuralNetwork();
-			virtual std::vector<double> feed(std::valarray<double>);
+			virtual std::valarray<double> feed(std::valarray<double>);
 			virtual std::valarray<double> getWeights(uint32_t, uint32_t); // layer, node
 			virtual uint32_t numLayers(); // Returns number of layers in neural net.
 			virtual uint32_t numNodes(uint32_t); // Returns number of nodes in a given layer.

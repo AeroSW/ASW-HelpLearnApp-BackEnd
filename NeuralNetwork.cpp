@@ -78,7 +78,7 @@ uint32_t ASW::NeuralNetwork::getNumWeights(uint32_t layer, uint32_t neuron) {
 	uint32_t n = m_starting_indices[layer] + neuron;
 	return m_network[n]->numWeights();
 }
-std::vector<double> ASW::NeuralNetwork::feed(std::valarray<double> inputs) {
+std::valarray<double> ASW::NeuralNetwork::feed(std::valarray<double> inputs) {
 	for (uint32_t cx = 0; cx < m_layers[0]; cx++) {
 		m_network[cx]->setValue(inputs[cx]);
 	}
@@ -104,9 +104,10 @@ std::vector<double> ASW::NeuralNetwork::feed(std::valarray<double> inputs) {
 		}
 	//	delete[] neuron_inputs;
 	}
-	std::vector<double> outputs;
-	for (uint32_t cx = m_starting_indices[m_layers.size() - 1]; cx < m_ending_indices[m_layers.size() - 1]; cx++) {
-		outputs.push_back(m_network[cx]->getValue());
+	std::valarray<double> outputs(m_layers[m_layers.size() - 1]);
+	uint32_t start_index = m_starting_indices[m_layers.size() - 1];
+	for (uint32_t cx = start_index; cx < m_ending_indices[m_layers.size() - 1]; cx++) {
+		outputs[cx - start_index] = (m_network[cx]->getValue());
 	}
 	return outputs;
 }

@@ -43,7 +43,7 @@ int main() {
 	std::cout << "Network Trained" << std::endl;
 	for (uint32_t cx = 0; cx < 4; cx++) {
 		std::cout << "1: " << inputs[cx][0] << "\t2: " << inputs[cx][1] << '\n';
-		std::vector<double> op = new_network->feed(inputs[cx]);
+		std::valarray<double> op = new_network->feed(inputs[cx]);
 		std::cout << "output: " << op[0] << std::endl;
 	}
 	delete nn;
