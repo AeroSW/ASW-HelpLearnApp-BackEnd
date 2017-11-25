@@ -85,6 +85,6 @@ namespace ASW {
 #ifndef REGISTER_TRAINING
 #define REGISTER_TRAINING(NAME,TYPE,...)\
 	namespace {\
-		::ASW::TrainingFactory::Registrator<TYPE,##__VA_ARGS__> johnson##NAME(#NAME);\
+		::ASW::TrainingFactory::Registrator<TYPE,##__VA_ARGS__> training_##NAME(#NAME);\
 	}
 #endif

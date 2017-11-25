@@ -72,10 +72,10 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 			// neurons for more optimal output.
 			try {
 				// Get the number of nodes in the output layer.
-				uint32_t output_size = m_network->numNodes(num_layers - 1);
+				unsigned int output_size = m_network->numNodes(num_layers - 1);
 				// Calculate the error between the example and calculated outputs.
 				// Train the output neuron(s) which these values belong to.
-				for (uint32_t cx = 0; cx < output_size; cx++) { 
+				for (unsigned int cx = 0; cx < output_size; cx++) { 
 					double training_error = current_outputs[cx] - feed_outputs[cx];
 					m_network->trainNeuron(num_layers - 1, cx, training_error); 
 				}
@@ -85,9 +85,9 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 					size_t num_curr = m_network->numNodes(l);
 					// Get the layer's, the one which the current hidden layer feeds into, size.
 					size_t num_next = m_network->numNodes(l + 1);
-					for (uint32_t curr_index = 0; curr_index < num_curr; curr_index++) { 
+					for (unsigned int curr_index = 0; curr_index < num_curr; curr_index++) { 
 						double summ_next_training_values = 0; 
-						for (uint32_t next_index = 0; next_index < num_next; next_index++) {
+						for (unsigned int next_index = 0; next_index < num_next; next_index++) {
 							// Calculate the difference from the expected value.
 							summ_next_training_values += m_network->getWeight(l + 1, next_index, curr_index) * m_network->getTraining(l + 1, next_index);
 						}
@@ -109,7 +109,7 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 			}
 			// Calculate New Weights
 			try {
-				for (uint32_t cx = 1; cx < num_layers; cx++) {
+				for (unsigned int cx = 1; cx < num_layers; cx++) {
 					// Grab the current layer's size.
 					size_t num_curr = m_network->numNodes(cx);
 					// Grab the previous layer's size.
@@ -144,11 +144,11 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 		}
 		current_example_error = 0.0; // Calculate absolute error for all outputs with the
 		// provided example set.
-		for (uint32_t cx = 0; cx < inputs.size(); cx++) {
+		for (unsigned int cx = 0; cx < inputs.size(); cx++) {
 			double t_outs_err = 0.0;
 			std::valarray<double> net_results = m_network->feed(inputs[cx]);
 			std::valarray<double> curr_outs = outputs[cx];
-			for (uint32_t dx = 0; dx < net_results.size(); dx++) {
+			for (unsigned int dx = 0; dx < net_results.size(); dx++) {
 				t_outs_err += fabs(net_results[dx] - curr_outs[dx]); 
 			}
 			// Average the errors based on the number of outputs.
@@ -160,4 +160,7 @@ ASW::NeuralNetwork  * ASW::BackPropagationTraining_Tol::train(ASW::NeuralNetwork
 		
 	} while (current_example_error > tolerance); // If we have hit the threshold, then exit.
 	return m_network;
+}
+ASW::TrainingInterface * ASW::BackPropagationTraining_Tol::copy() {
+	return new ASW::BackPropagationTraining_Tol(*this);
 }
