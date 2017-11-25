@@ -20,7 +20,7 @@ namespace ASW {
 
 #ifndef VALIDATION_THROW
 #define VALIDATION_THROW(MSG) { \
-	throw ValidationExcept(__FILE__,__LINE__,MSG); \
+	throw ValidationException(__FILE__,__LINE__,MSG); \
 }
 #endif
 
