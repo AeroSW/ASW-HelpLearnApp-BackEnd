@@ -11,18 +11,18 @@ int main() {
 	std::cout << "Hello World!" << std::endl;
 	std::cin >> z;
 	std::vector<std::string> function_names;
-	std::vector<uint32_t> blueprint;
+	std::vector<unsigned int> blueprint;
 	blueprint.push_back(2);
 	blueprint.push_back(3);
 	blueprint.push_back(1);
-	for (uint32_t i = 0; i < 2; i++) {
+	for (unsigned int i = 0; i < 2; i++) {
 		function_names.push_back("logistic");
 	}
 	NeuralNetwork * nn = new NeuralNetwork(function_names, blueprint);
 	std::vector<std::valarray<double>> inputs;
 	std::vector<std::valarray<double>> outputs;
-	for (uint32_t i = 0; i < 2; i++) {
-		for (uint32_t j = 0; j < 2; j++) {
+	for (unsigned int i = 0; i < 2; i++) {
+		for (unsigned int j = 0; j < 2; j++) {
 			std::valarray<double> input_set(2);
 			std::valarray<double> output_set(1);
 			input_set[0] = (double) i;
@@ -41,7 +41,7 @@ int main() {
 	NeuralNetwork * new_network = m_trainer->train(nn, inputs, outputs);
 	cin >> z;
 	std::cout << "Network Trained" << std::endl;
-	for (uint32_t cx = 0; cx < 4; cx++) {
+	for (unsigned int cx = 0; cx < 4; cx++) {
 		std::cout << "1: " << inputs[cx][0] << "\t2: " << inputs[cx][1] << '\n';
 		std::valarray<double> op = new_network->feed(inputs[cx]);
 		std::cout << "output: " << op[0] << std::endl;
