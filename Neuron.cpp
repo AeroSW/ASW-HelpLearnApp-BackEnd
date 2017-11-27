@@ -5,10 +5,10 @@
 #include <iostream>
 
 
-ASW::Neuron::Neuron(double * weights, uint32_t nweights, const std::string &fkey, double bias) :
+ASW::Neuron::Neuron(double * weights, unsigned int nweights, const std::string &fkey, double bias) :
 m_weights(weights,nweights), m_bias(bias), m_function(FunctionFactory::createFunction(fkey)){}
 
-ASW::Neuron::Neuron(uint32_t nweights, const std::string &fkey, double bias) :
+ASW::Neuron::Neuron(unsigned int nweights, const std::string &fkey, double bias) :
 m_weights(nweights), m_bias(bias), m_function(FunctionFactory::createFunction(fkey)) {}
 
 ASW::Neuron::Neuron(const Neuron &n) :
@@ -40,7 +40,7 @@ double ASW::Neuron::getTrainingValue() {
 double ASW::Neuron::getValue() {
 	return m_value;
 }
-double ASW::Neuron::getWeight(uint32_t index) {
+double ASW::Neuron::getWeight(unsigned int index) {
 	return m_weights[index];
 }
 std::valarray<double> ASW::Neuron::getWeights() {
@@ -56,7 +56,7 @@ void ASW::Neuron::setTrainingValue(double tv) {
 void ASW::Neuron::setValue(double v) {
 	m_value = v;
 }
-void ASW::Neuron::setWeight(double weight, uint32_t index) {
+void ASW::Neuron::setWeight(double weight, unsigned int index) {
 	std::string index_str = std::to_string(index);
 	NEURAL_ASSERT((0 < index && index < m_weights.size()), index_str + " is not within the bounds of the array of weights.");
 	m_weights[index] = weight;
@@ -65,7 +65,7 @@ void ASW::Neuron::setWeights(std::valarray<double> n_weights) {
 	NEURAL_ASSERT(n_weights.size() == m_weights.size(),"Size mismatch between input and number of weights.");
 	m_weights = n_weights;
 }
-uint32_t ASW::Neuron::numWeights() {
+unsigned int ASW::Neuron::numWeights() {
 	return m_weights.size();
 }
 ASW::Neuron& ASW::Neuron::operator=(const ASW::Neuron& n) {

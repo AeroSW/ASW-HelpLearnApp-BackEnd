@@ -86,6 +86,6 @@ namespace ASW {
 #ifndef REGISTER_FUNCTION
 #define REGISTER_FUNCTION(NAME,TYPE,...)\
 	namespace {\
-		::ASW::FunctionFactory::Registrator<TYPE,##__VA_ARGS__> registrator_##NAME(#NAME);\
+		::ASW::FunctionFactory::Registrator<TYPE,##__VA_ARGS__> function_##NAME(#NAME);\
 	}
 #endif

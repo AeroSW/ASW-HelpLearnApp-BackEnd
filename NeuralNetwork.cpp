@@ -2,29 +2,29 @@
 #include "NetworkException.h"
 #include <iostream>
 
-ASW::NeuralNetwork::NeuralNetwork(std::vector<std::string>& layer_functions, std::vector<uint32_t>& blueprint) :
+ASW::NeuralNetwork::NeuralNetwork(std::vector<std::string>& layer_functions, std::vector<unsigned int>& blueprint) :
 m_layers(blueprint),m_starting_indices(blueprint.size()),m_ending_indices(blueprint.size()){
-	uint32_t num_layers = m_layers.size(); 
-	uint32_t total_num_neurons = 0; 
-	for (uint32_t cx = 0; cx < num_layers; cx++) total_num_neurons += m_layers[cx]; 
+	unsigned int num_layers = m_layers.size(); 
+	unsigned int total_num_neurons = 0; 
+	for (unsigned int cx = 0; cx < num_layers; cx++) total_num_neurons += m_layers[cx]; 
 	m_network = new Neuron*[total_num_neurons]; 
-	for (uint32_t cx = 0; cx < m_layers[0]; cx++) {
+	for (unsigned int cx = 0; cx < m_layers[0]; cx++) {
 		m_network[cx] = new Neuron(0l, "linear", 0.0f);
 	}
-	for (uint32_t cx = 1; cx < num_layers; cx++) {
-		uint32_t s_neuron = 0;
-		for (uint32_t dx = 0; dx < cx; dx++) s_neuron += m_layers[dx];
-		uint32_t e_neuron = s_neuron + m_layers[cx];
-		for (uint32_t dx = s_neuron; dx < e_neuron; dx++) {
+	for (unsigned int cx = 1; cx < num_layers; cx++) {
+		unsigned int s_neuron = 0;
+		for (unsigned int dx = 0; dx < cx; dx++) s_neuron += m_layers[dx];
+		unsigned int e_neuron = s_neuron + m_layers[cx];
+		for (unsigned int dx = s_neuron; dx < e_neuron; dx++) {
 			m_network[dx] = new Neuron(m_layers[cx - 1], layer_functions[cx - 1], 0.0);
 		}
 	}
 	m_starting_indices[0] = 0;
 	m_ending_indices[0] = m_layers[0];
 	
-	for (uint32_t cx = 1; cx < m_layers.size(); cx++) {
-		uint32_t summ = 0;
-		for (uint32_t dx = 0; dx < cx; dx++) {
+	for (unsigned int cx = 1; cx < m_layers.size(); cx++) {
+		unsigned int summ = 0;
+		for (unsigned int dx = 0; dx < cx; dx++) {
 			summ += m_layers[dx];
 		}
 		m_starting_indices[cx] = summ;
@@ -33,22 +33,22 @@ m_layers(blueprint),m_starting_indices(blueprint.size()),m_ending_indices(bluepr
 }
 ASW::NeuralNetwork::NeuralNetwork(const NeuralNetwork& nn) :
 m_layers(nn.m_layers),m_starting_indices(nn.m_starting_indices),m_ending_indices(nn.m_ending_indices){
-	uint32_t total_num_neurons = 0;
-	for (uint32_t cx = 0; cx < m_layers.size(); cx++) {
+	unsigned int total_num_neurons = 0;
+	for (unsigned int cx = 0; cx < m_layers.size(); cx++) {
 		total_num_neurons += m_layers[cx];
 	}
 	m_network = new Neuron*[total_num_neurons];
-	for (uint32_t cx = 0; cx < total_num_neurons; cx++) {
+	for (unsigned int cx = 0; cx < total_num_neurons; cx++) {
 		m_network[cx] = new Neuron(*(nn.m_network[cx]));
 	}
 }
 ASW::NeuralNetwork::~NeuralNetwork() {
 	if (m_network != nullptr) {
-		uint32_t total_num_neurons = 0;
-		for (uint32_t cx = 0; cx < m_layers.size(); cx++) {
+		unsigned int total_num_neurons = 0;
+		for (unsigned int cx = 0; cx < m_layers.size(); cx++) {
 			total_num_neurons += m_layers[cx];
 		}
-		for (uint32_t cx = 0; cx < total_num_neurons; cx++) {
+		for (unsigned int cx = 0; cx < total_num_neurons; cx++) {
 			delete m_network[cx];
 		}
 		delete[] m_network;
@@ -57,43 +57,43 @@ ASW::NeuralNetwork::~NeuralNetwork() {
 		m_ending_indices.clear();
 	}
 }
-uint32_t ASW::NeuralNetwork::numLayers() {
+unsigned int ASW::NeuralNetwork::numLayers() {
 	return m_layers.size();
 }
-uint32_t ASW::NeuralNetwork::numNodes(uint32_t layer) {
+unsigned int ASW::NeuralNetwork::numNodes(unsigned int layer) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	return m_layers[layer];
 }
-uint32_t ASW::NeuralNetwork::getEndingIndex(uint32_t layer) {
+unsigned int ASW::NeuralNetwork::getEndingIndex(unsigned int layer) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	return m_ending_indices[layer];
 }
-uint32_t ASW::NeuralNetwork::getStartingIndex(uint32_t layer) {
+unsigned int ASW::NeuralNetwork::getStartingIndex(unsigned int layer) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	return m_starting_indices[layer];
 }
-uint32_t ASW::NeuralNetwork::getNumWeights(uint32_t layer, uint32_t neuron) {
+unsigned int ASW::NeuralNetwork::getNumWeights(unsigned int layer, unsigned int neuron) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	return m_network[n]->numWeights();
 }
-std::vector<double> ASW::NeuralNetwork::feed(std::valarray<double> inputs) {
-	for (uint32_t cx = 0; cx < m_layers[0]; cx++) {
+std::valarray<double> ASW::NeuralNetwork::feed(std::valarray<double> inputs) {
+	for (unsigned int cx = 0; cx < m_layers[0]; cx++) {
 		m_network[cx]->setValue(inputs[cx]);
 	}
-	for (uint32_t cx = 1; cx < m_layers.size(); cx++) {
-		uint32_t input_size = m_layers[cx - 1];
-		uint32_t input_start = m_starting_indices[cx - 1];
-		uint32_t input_end = m_ending_indices[cx - 1];
-		uint32_t curr_start = m_starting_indices[cx];
-		uint32_t curr_end = m_ending_indices[cx];
+	for (unsigned int cx = 1; cx < m_layers.size(); cx++) {
+		unsigned int input_size = m_layers[cx - 1];
+		unsigned int input_start = m_starting_indices[cx - 1];
+		unsigned int input_end = m_ending_indices[cx - 1];
+		unsigned int curr_start = m_starting_indices[cx];
+		unsigned int curr_end = m_ending_indices[cx];
 
 		std::valarray<double> neuron_inputs(input_size);
-		for (uint32_t dx = input_start; dx < input_end; dx++) {
+		for (unsigned int dx = input_start; dx < input_end; dx++) {
 			neuron_inputs[dx - input_start] = m_network[dx]->getValue();
 		}
-		for (uint32_t dx = curr_start; dx < curr_end; dx++) {
+		for (unsigned int dx = curr_start; dx < curr_end; dx++) {
 			try {
 				m_network[dx]->feed(neuron_inputs);
 			}
@@ -104,52 +104,53 @@ std::vector<double> ASW::NeuralNetwork::feed(std::valarray<double> inputs) {
 		}
 	//	delete[] neuron_inputs;
 	}
-	std::vector<double> outputs;
-	for (uint32_t cx = m_starting_indices[m_layers.size() - 1]; cx < m_ending_indices[m_layers.size() - 1]; cx++) {
-		outputs.push_back(m_network[cx]->getValue());
+	std::valarray<double> outputs(m_layers[m_layers.size() - 1]);
+	unsigned int start_index = m_starting_indices[m_layers.size() - 1];
+	for (unsigned int cx = start_index; cx < m_ending_indices[m_layers.size() - 1]; cx++) {
+		outputs[cx - start_index] = (m_network[cx]->getValue());
 	}
 	return outputs;
 }
-std::valarray<double> ASW::NeuralNetwork::getWeights(uint32_t layer, uint32_t neuron) {
+std::valarray<double> ASW::NeuralNetwork::getWeights(unsigned int layer, unsigned int neuron) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	return m_network[n]->getWeights();
 }
-double ASW::NeuralNetwork::getBias(uint32_t layer, uint32_t neuron) {
+double ASW::NeuralNetwork::getBias(unsigned int layer, unsigned int neuron) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	return m_network[n]->getBias();
 }
-double ASW::NeuralNetwork::getTraining(uint32_t layer, uint32_t neuron) {
+double ASW::NeuralNetwork::getTraining(unsigned int layer, unsigned int neuron) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	return m_network[n]->getTrainingValue();
 }
-double ASW::NeuralNetwork::getValue(uint32_t layer, uint32_t neuron) {
+double ASW::NeuralNetwork::getValue(unsigned int layer, unsigned int neuron) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	return m_network[n]->getValue();
 }
-double ASW::NeuralNetwork::getWeight(uint32_t layer, uint32_t neuron, uint32_t weight) {
+double ASW::NeuralNetwork::getWeight(unsigned int layer, unsigned int neuron, unsigned int weight) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	
 	return m_network[n]->getWeight(weight);
 }
-double ASW::NeuralNetwork::trainNeuron(uint32_t layer, uint32_t neuron, double input) {
+double ASW::NeuralNetwork::trainNeuron(unsigned int layer, unsigned int neuron, double input) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t index = m_starting_indices[layer] + neuron;
+	unsigned int index = m_starting_indices[layer] + neuron;
 	if (layer != 0) {
 		std::valarray<double> inputs(m_layers[layer - 1]);
-		uint32_t start = m_starting_indices[layer - 1];
-		uint32_t end = m_ending_indices[layer - 1];
-		for (uint32_t i = start; i < end; i++) {
+		unsigned int start = m_starting_indices[layer - 1];
+		unsigned int end = m_ending_indices[layer - 1];
+		for (unsigned int i = start; i < end; i++) {
 			inputs[i - start] = m_network[i]->getValue();
 		}
 		double value = 0.0;
@@ -165,34 +166,34 @@ double ASW::NeuralNetwork::trainNeuron(uint32_t layer, uint32_t neuron, double i
 	}
 	return 0.0;
 }
-void ASW::NeuralNetwork::setBias(uint32_t layer, uint32_t neuron, double bias) {
+void ASW::NeuralNetwork::setBias(unsigned int layer, unsigned int neuron, double bias) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	m_network[n]->setBias(bias);
 }
-void ASW::NeuralNetwork::setTraining(uint32_t layer, uint32_t neuron, double training) {
+void ASW::NeuralNetwork::setTraining(unsigned int layer, unsigned int neuron, double training) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	m_network[n]->setTrainingValue(training);
 }
-void ASW::NeuralNetwork::setValue(uint32_t layer, uint32_t neuron, double value) {
+void ASW::NeuralNetwork::setValue(unsigned int layer, unsigned int neuron, double value) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	m_network[n]->setValue(value);
 }
-void ASW::NeuralNetwork::setWeight(uint32_t layer, uint32_t neuron, uint32_t weight, double weight_value) {
+void ASW::NeuralNetwork::setWeight(unsigned int layer, unsigned int neuron, unsigned int weight, double weight_value) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	m_network[n]->setWeight(weight_value, weight);
 }
-void ASW::NeuralNetwork::setWeights(uint32_t layer, uint32_t neuron, std::valarray<double> weights) {
+void ASW::NeuralNetwork::setWeights(unsigned int layer, unsigned int neuron, std::valarray<double> weights) {
 	NEURAL_ASSERT((0 <= layer && layer < m_layers.size()), "Layer index is out of bounds.");
 	NEURAL_ASSERT((0 <= neuron && neuron < m_layers[layer]), "Neuron's reference index is out of bounds.");
-	uint32_t n = m_starting_indices[layer] + neuron;
+	unsigned int n = m_starting_indices[layer] + neuron;
 	try {
 		m_network[n]->setWeights(weights);
 	}
@@ -204,11 +205,11 @@ void ASW::NeuralNetwork::setWeights(uint32_t layer, uint32_t neuron, std::valarr
 ASW::NeuralNetwork& ASW::NeuralNetwork::operator=(const ASW::NeuralNetwork& nn) {
 	if (this == &nn) return *this;
 	if (m_network != nullptr) {
-		uint32_t total_num_neurons = 0;
-		for (uint32_t cx = 0; cx < m_layers.size(); cx++) {
+		unsigned int total_num_neurons = 0;
+		for (unsigned int cx = 0; cx < m_layers.size(); cx++) {
 			total_num_neurons += m_layers[cx];
 		}
-		for (uint32_t cx = 0; cx < total_num_neurons; cx++) {
+		for (unsigned int cx = 0; cx < total_num_neurons; cx++) {
 			delete m_network[cx];
 		}
 		delete[] m_network;
@@ -219,12 +220,12 @@ ASW::NeuralNetwork& ASW::NeuralNetwork::operator=(const ASW::NeuralNetwork& nn) 
 	m_layers = nn.m_layers;
 	m_starting_indices = nn.m_starting_indices;
 	m_ending_indices = nn.m_ending_indices;
-	uint32_t nn_num_neurons = 0;
-	for (uint32_t cx = 0; cx < nn.m_layers.size(); cx++) {
+	unsigned int nn_num_neurons = 0;
+	for (unsigned int cx = 0; cx < nn.m_layers.size(); cx++) {
 		nn_num_neurons += nn.m_layers[cx];
 	}
 	m_network = new Neuron*[nn_num_neurons];
-	for (uint32_t cx = 0; cx < nn_num_neurons; cx++) {
+	for (unsigned int cx = 0; cx < nn_num_neurons; cx++) {
 		m_network[cx] = new Neuron(*(nn.m_network[cx]));
 	}
 	return *this;

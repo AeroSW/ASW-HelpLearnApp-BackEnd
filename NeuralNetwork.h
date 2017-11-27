@@ -7,31 +7,31 @@ namespace ASW {
 	class NeuralNetwork {
 		private:
 			Neuron** m_network;
-			std::vector<uint32_t> m_layers;
-			std::vector<uint32_t> m_starting_indices;
-			std::vector<uint32_t> m_ending_indices;
+			std::vector<unsigned int> m_layers;
+			std::vector<unsigned int> m_starting_indices;
+			std::vector<unsigned int> m_ending_indices;
 
 		public:
-			NeuralNetwork(std::vector<std::string>&, std::vector<uint32_t>&);
+			NeuralNetwork(std::vector<std::string>&, std::vector<unsigned int>&);
 			NeuralNetwork(const NeuralNetwork&);
 			virtual ~NeuralNetwork();
-			virtual std::vector<double> feed(std::valarray<double>);
-			virtual std::valarray<double> getWeights(uint32_t, uint32_t); // layer, node
-			virtual uint32_t numLayers(); // Returns number of layers in neural net.
-			virtual uint32_t numNodes(uint32_t); // Returns number of nodes in a given layer.
-			virtual uint32_t getStartingIndex(uint32_t);
-			virtual uint32_t getEndingIndex(uint32_t);
-			virtual uint32_t getNumWeights(uint32_t, uint32_t);
-			virtual double getBias(uint32_t, uint32_t); // layer, node
-			virtual double getTraining(uint32_t, uint32_t);
-			virtual double getValue(uint32_t, uint32_t); // (layer index, node index)
-			virtual double getWeight(uint32_t, uint32_t, uint32_t); // layer, node, weight index
-			virtual double trainNeuron(uint32_t, uint32_t, double);
-			virtual void setBias(uint32_t, uint32_t, double);
-			virtual void setTraining(uint32_t, uint32_t, double);
-			virtual void setValue(uint32_t, uint32_t, double);
-			virtual void setWeight(uint32_t, uint32_t, uint32_t, double);
-			virtual void setWeights(uint32_t, uint32_t, std::valarray<double>);
+			virtual std::valarray<double> feed(std::valarray<double>);
+			virtual std::valarray<double> getWeights(unsigned int, unsigned int); // layer, node
+			virtual unsigned int numLayers(); // Returns number of layers in neural net.
+			virtual unsigned int numNodes(unsigned int); // Returns number of nodes in a given layer.
+			virtual unsigned int getStartingIndex(unsigned int);
+			virtual unsigned int getEndingIndex(unsigned int);
+			virtual unsigned int getNumWeights(unsigned int, unsigned int);
+			virtual double getBias(unsigned int, unsigned int); // layer, node
+			virtual double getTraining(unsigned int, unsigned int);
+			virtual double getValue(unsigned int, unsigned int); // (layer index, node index)
+			virtual double getWeight(unsigned int, unsigned int, unsigned int); // layer, node, weight index
+			virtual double trainNeuron(unsigned int, unsigned int, double);
+			virtual void setBias(unsigned int, unsigned int, double);
+			virtual void setTraining(unsigned int, unsigned int, double);
+			virtual void setValue(unsigned int, unsigned int, double);
+			virtual void setWeight(unsigned int, unsigned int, unsigned int, double);
+			virtual void setWeights(unsigned int, unsigned int, std::valarray<double>);
 			virtual NeuralNetwork& operator=(const NeuralNetwork&);
 	};
 }
