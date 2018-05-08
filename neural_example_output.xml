@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<neural_network>
+	<layer function="linear">
+		<neuron bias="8">
+			<weight value="0"/>
+		</neuron>
+		<neuron bias="8">
+			<weight value="0"/>
+		</neuron>
+	</layer>
+	<layer function="sigmoid">
+		<neuron bias="8">
+			<weight value="8"/>
+			<weight value="8"/>
+		</neuron>
+		<neuron bias="8">
+			<weight value="8"/>
+			<weight value="8"/>
+		</neuron>
+		<neuron bias="8">
+			<weight value="8"/>
+			<weight value="8"/>
+		</neuron>
+	</layer>
+	<layer function="hard_limit">
+		<neuron bias="8">
+			<weight value="8"/>
+			<weight value="8"/>
+			<weight value="8"/>
+		</neuron>
+	</layer>
+</neural_network>
