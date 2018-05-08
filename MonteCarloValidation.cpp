@@ -23,8 +23,18 @@ ASW::MonteCarloValidation::MonteCarloValidation(const MonteCarloValidation &mcv)
 m_num_bins(mcv.m_num_bins), m_max_layers(mcv.m_max_layers), m_max_nodes(mcv.m_max_nodes), m_output_location(mcv.m_output_location), m_error_calculator(mcv.m_error_calculator) {}
 ASW::MonteCarloValidation::~MonteCarloValidation() {}
 
+/*!
+	findValidArchitecture
 
-void ASW::MonteCarloValidation::findValidArchitecture(std::vector<std::string> &func_list, std::vector<std::valarray<double>> &inputs,
+	This function does the main brunt of the work for finding an algorithm to use for deep learning.
+	The function also has a section of code within it which is parallelized to allow faster testing
+	of the multiple different architectures built while trying to identify the most valid architecture
+	to use for the problem being presented.
+
+	\param func_list vector<string> stores the list of functions being used in each layer.
+	\param inputs vector<vector<double>>
+*/
+void ASW::MonteCarloValidation::findValidArchitecture(std::vector<std::string> &func_list /*TODO - Modify to be a vector of vector of strings and check to ensure size of vector of vector matches the m_max_layers*/, std::vector<std::valarray<double>> &inputs,
 	std::vector<std::valarray<double>> &outputs, TrainingInterface * trainer) {
 	// Check if there are inputs and outputs and they are of equal size.
 	bool validation_cond = ((inputs.size() > 0) && (outputs.size() > 0) && (outputs.size() == inputs.size()));
@@ -99,7 +109,7 @@ void ASW::MonteCarloValidation::findValidArchitecture(std::vector<std::string> &
 		std::random_device thread_rd; // Create each thread's random device.
 		std::mt19937_64 thread_gen{ thread_rd() }; // create the generator.
 		std::uniform_int_distribution<unsigned int> thread_dist(0, m_num_bins - 1); // 0-based
-
+		#pragma omp barrier // Force threads to catch up with each other here, so the for loop is properly distributed during the parallel process.
 		#pragma omp for schedule(dynamic) // Set up the for loop appropriately.
 		for (unsigned int cx = 0; cx < blueprints.size(); cx++) {
 			NeuralNetwork * thread_net = new NeuralNetwork(func_list, blueprints[cx]);
@@ -131,7 +141,6 @@ void ASW::MonteCarloValidation::findValidArchitecture(std::vector<std::string> &
 				delete thread_trained_network;
 			} // end for dx
 			thread_error /= m_num_bins;
-			//	NeuralNetwork * thread_trained_net = thread_trainer->train(thread_net, );
 			#pragma omp critical
 			{
 				if (cba.error > thread_error) {
@@ -154,7 +163,7 @@ void ASW::MonteCarloValidation::findValidArchitecture(std::vector<std::string> &
 //	TRAINING_ASSERT((final_trainer != nullptr), "Training method, " + training_method + ", with specified arguments does not exist.");
 	final_network = final_trainer->train(cba.m_network, inputs, outputs); // new Network
 	TRAINING_ASSERT((final_network != nullptr), "Final network references null.");
-//	writeNetwork(final_network);
+//	writeNetwork(final_network); // TODO Define object to write network into a file.
 
 	// Don't need to check final_trainer or final_network... Asserts are raised if they are null...
 	delete final_trainer; // delete new Trainer
@@ -189,7 +198,7 @@ std::vector<std::vector<unsigned int>> ASW::MonteCarloValidation::makeBlueprints
 		// Push back number of nodes which each layer can hold at most
 		for (unsigned int jj = 0; jj < ii; jj++) {
 			current_hidden_layers_node_counts.push_back(m_max_nodes);
-		} // for (unsigned int jj = 0; jj < ii; jj++)
+		} // End for (unsigned int jj = 0; jj < ii; jj++)
 		unsigned int total_blueprints_for_node_limit = static_cast<unsigned int>(pow(m_max_nodes, ii));
 		// Create blueprints
 		for (unsigned int jj = 0; jj < total_blueprints_for_node_limit; jj++) {
@@ -218,7 +227,7 @@ std::vector<std::vector<unsigned int>> ASW::MonteCarloValidation::makeBlueprints
 			} // fi (ii > 0)
 			blueprints.push_back(blueprint);
 			if (decrement_flag) break;
-		} // for (unsigned int jj = 0; jj < total_blueprints_for_node_limit; jj++)
-	} // for (unsigned int ii = 0; ii < m_ma_layers; ii++)
+		} // End for (unsigned int jj = 0; jj < total_blueprints_for_node_limit; jj++)
+	} // End for (unsigned int ii = 0; ii < m_ma_layers; ii++)
 	return blueprints;
 } // End makeBlueprints
